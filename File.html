@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MediPulse - Hospital Management System</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div>
+        <div class="sidebar-brand">
+          <div class="brand-icon">
+            <i data-lucide="activity"></i>
+          </div>
+          <span class="brand-text">MediPulse</span>
+        </div>
+
+        <nav class="sidebar-nav">
+          <button class="nav-btn active" data-tab="dashboard">
+            <i data-lucide="layout-dashboard"></i>
+            <span>Dashboard</span>
+          </button>
+          <button class="nav-btn" data-tab="appointments">
+            <i data-lucide="calendar"></i>
+            <span>Appointments</span>
+          </button>
+          <button class="nav-btn" data-tab="patients">
+            <i data-lucide="users"></i>
+            <span>Patients</span>
+          </button>
+          <button class="nav-btn" data-tab="beds">
+            <i data-lucide="bed"></i>
+            <span>Bed Occupancy</span>
+          </button>
+        </nav>
+      </div>
+
+      <div class="sidebar-user">
+        <div class="user-avatar">DR</div>
+        <div class="user-info">
+          <p class="user-name">Dr. Rajesh Varma</p>
+          <p class="user-role">Chief Medical Admin</p>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Header -->
+      <header class="topbar">
+        <h1 id="page-title" class="page-title">Hospital Overview</h1>
+        
+        <div class="topbar-actions">
+          <div class="search-box">
+            <i data-lucide="search" class="search-icon"></i>
+            <input type="text" id="global-search" placeholder="Search patient, doctor, ID..." />
+          </div>
+          <button class="icon-btn" aria-label="Notifications">
+            <i data-lucide="bell"></i>
+            <span class="notification-badge"></span>
+          </button>
+        </div>
+      </header>
+
+      <!-- View Containers -->
+      <div class="content-body">
+        
+        <!-- DASHBOARD TAB -->
+        <section id="tab-dashboard" class="tab-content active">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-header">
+                <span class="stat-label">Total Patients</span>
+                <span class="stat-icon-wrapper blue"><i data-lucide="users"></i></span>
+              </div>
+              <h3 class="stat-value" id="stat-patients-count">1,248</h3>
+              <p class="stat-change positive">↑ +12% from last week</p>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-header">
+                <span class="stat-label">Appointments Today</span>
+                <span class="stat-icon-wrapper indigo"><i data-lucide="calendar"></i></span>
+              </div>
+              <h3 class="stat-value" id="stat-appointments-today">0</h3>
+              <p class="stat-change neutral">Updated just now</p>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-header">
+                <span class="stat-label">Beds Occupied</span>
+                <span class="stat-icon-wrapper amber"><i data-lucide="bed"></i></span>
+              </div>
+              <h3 class="stat-value" id="stat-beds-count">0 / 18</h3>
+              <p class="stat-change neutral" id="stat-beds-percent">0% capacity</p>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-header">
+                <span class="stat-label">Doctors Active</span>
+                <span class="stat-icon-wrapper emerald"><i data-lucide="user-check"></i></span>
+              </div>
+              <h3 class="stat-value">18</h3>
+              <p class="stat-change neutral">Across 6 wards</p>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <h2 class="panel-title">Upcoming Appointments</h2>
+              <button class="link-btn" onclick="switchTab('appointments')">View All</button>
+            </div>
+            <div class="table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Patient</th>
+                    <th>Department</th>
+                    <th>Doctor</th>
+                    <th>Time</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="quick-appointments-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- APPOINTMENTS TAB -->
+        <section id="tab-appointments" class="tab-content">
+          <div class="section-toolbar">
+            <h2 class="section-heading">Scheduled Appointments</h2>
+            <button class="primary-btn" onclick="toggleModal('appointment-modal')">
+              <i data-lucide="plus"></i> New Appointment
+            </button>
+          </div>
+
+          <div class="panel">
+            <div class="table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Patient Name</th>
+                    <th>Department</th>
+                    <th>Assigned Doctor</th>
+                    <th>Time Slot</th>
+                    <th>Status</th>
+                    <th class="text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="full-appointments-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- PATIENTS TAB -->
+        <section id="tab-patients" class="tab-content">
+          <div class="section-toolbar">
+            <h2 class="section-heading">Patient Records</h2>
+            <button class="primary-btn" onclick="toggleModal('patient-modal')">
+              <i data-lucide="user-plus"></i> Register Patient
+            </button>
+          </div>
+
+          <div class="panel">
+            <div class="table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Patient ID</th>
+                    <th>Full Name</th>
+                    <th>Age / Gender</th>
+                    <th>Blood Group</th>
+                    <th>Contact Phone</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="patients-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- BED OCCUPANCY TAB -->
+        <section id="tab-beds" class="tab-content">
+          <div class="section-toolbar">
+            <h2 class="section-heading">Bed Status Overview</h2>
+            <div class="legend-group">
+              <span class="legend-item"><span class="indicator available"></span> Available</span>
+              <span class="legend-item"><span class="indicator occupied"></span> Occupied</span>
+              <span class="legend-item"><span class="indicator maintenance"></span> Maintenance</span>
+            </div>
+          </div>
+
+          <div class="bed-grid" id="bed-grid"></div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- MODAL: APPOINTMENT -->
+  <div id="appointment-modal" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Book New Appointment</h3>
+        <button class="modal-close" onclick="toggleModal('appointment-modal')">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <form id="appointment-form" class="modal-form">
+        <div class="form-group">
+          <label for="app-patient">Patient Name</label>
+          <input type="text" id="app-patient" required placeholder="e.g. Ramesh Kumar" />
+        </div>
+        <div class="form-group">
+          <label for="app-dept">Department</label>
+          <select id="app-dept">
+            <option>Cardiology</option>
+            <option>Orthopedics</option>
+            <option>Neurology</option>
+            <option>General Medicine</option>
+            <option>Pediatrics</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="app-doctor">Assigned Doctor</label>
+          <input type="text" id="app-doctor" required placeholder="e.g. Dr. A. Sharma" />
+        </div>
+        <div class="form-group">
+          <label for="app-time">Time Slot</label>
+          <input type="text" id="app-time" required placeholder="e.g. 11:30 AM" />
+        </div>
+        <button type="submit" class="primary-btn full-width">Schedule Appointment</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: REGISTER PATIENT -->
+  <div id="patient-modal" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Register New Patient</h3>
+        <button class="modal-close" onclick="toggleModal('patient-modal')">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <form id="patient-form" class="modal-form">
+        <div class="form-group">
+          <label for="pat-name">Full Name</label>
+          <input type="text" id="pat-name" required placeholder="e.g. Sunita Reddy" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="pat-age">Age</label>
+            <input type="number" id="pat-age" required placeholder="32" min="1" max="120" />
+          </div>
+          <div class="form-group">
+            <label for="pat-gender">Gender</label>
+            <select id="pat-gender">
+              <option value="M">Male</option>
+              <option value="F">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="pat-blood">Blood Group</label>
+            <select id="pat-blood">
+              <option>O+</option><option>O-</option>
+              <option>A+</option><option>A-</option>
+              <option>B+</option><option>B-</option>
+              <option>AB+</option><option>AB-</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="pat-phone">Phone Number</label>
+          <input type="tel" id="pat-phone" required placeholder="+91 9876543210" />
+        </div>
+        <button type="submit" class="primary-btn full-width">Save Patient Record</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script src="app.js"></script>
+</body>
+</html>
